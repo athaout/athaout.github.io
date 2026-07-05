@@ -27,19 +27,26 @@ body{
 
 .container{
     padding:40px;
+    max-width:900px;
 }
 
 h1{
     font-size:55px;
-    margin-bottom:15px;
+    margin-bottom:30px;
 }
 
-p{
-    font-size:22px;
+#timer{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:20px;
+    flex-wrap:wrap;
+    font-size:35px;
+    font-weight:bold;
 }
 
 button{
-    margin-top:30px;
+    margin-top:40px;
     padding:15px 35px;
     border:none;
     border-radius:50px;
@@ -48,87 +55,108 @@ button{
     background:white;
     color:#ff1493;
     font-weight:bold;
+    transition:.3s;
+}
+
+button:hover{
+    transform:scale(1.05);
 }
 </style>
 </head>
 <body>
 
-<div class="container" id="content"></div>
+<div class="container">
+
+<h1 id="title">🎁</h1>
+
+<div id="timer">Loading...</div>
+
+<div id="extra"></div>
+
+</div>
 
 <audio id="music" src="hbd.mp3"></audio>
 
 <script>
 
-const content = document.getElementById("content");
+const title=document.getElementById("title");
+const timer=document.getElementById("timer");
+const extra=document.getElementById("extra");
+
+function countdown(){
+
+const now=new Date();
+
+let target=new Date(now.getFullYear(),6,16,0,0,0);
+
+if(now>target && !(now.getDate()==16 && now.getMonth()==6)){
+target.setFullYear(target.getFullYear()+1);
+}
+
+const distance=target-now;
+
+if(now.getDate()==16 && now.getMonth()==6){
+
+title.innerHTML="🎉 Happy Birthday! 🎂";
+
+timer.innerHTML=`
+<span>00 Hari</span>
+<span>00 Jam</span>
+<span>00 Menit</span>
+<span>00 Detik</span>
+`;
+
+extra.innerHTML=`
+<button onclick="playBirthday()">🎵 Putar Musik</button>
+`;
+
+fire();
+
+if(!window.loop){
+window.loop=true;
+setInterval(fire,3000);
+}
+
+return;
+}
+
+const days=Math.floor(distance/(1000*60*60*24));
+const hours=Math.floor((distance%(1000*60*60*24))/(1000*60*60));
+const minutes=Math.floor((distance%(1000*60*60))/(1000*60));
+const seconds=Math.floor((distance%(1000*60))/1000);
+
+title.innerHTML="🎁";
+
+timer.innerHTML=`
+<span>${days} Hari</span>
+<span>${String(hours).padStart(2,'0')} Jam</span>
+<span>${String(minutes).padStart(2,'0')} Menit</span>
+<span>${String(seconds).padStart(2,'0')} Detik</span>
+`;
+
+}
 
 function fire(){
-    confetti({
-        particleCount:200,
-        spread:180,
-        origin:{y:0.6}
-    });
+confetti({
+particleCount:200,
+spread:180,
+origin:{y:0.6}
+});
 }
 
-window.playBirthday=function(){
-    document.getElementById("music").play();
+function playBirthday(){
 
-    confetti({
-        particleCount:500,
-        spread:360
-    });
+document.getElementById("music").play();
+
+confetti({
+particleCount:500,
+spread:360
+});
+
 }
 
-function updateCountdown(){
-
-    const now = new Date();
-
-    // Target 16 Juli jam 00:00
-    const target = new Date(now.getFullYear(),6,16,0,0,0);
-
-    const diff = target - now;
-
-    if(diff <= 0){
-
-        content.innerHTML=`
-        <h1>🎉 Happy Birthday! 🎂</h1>
-
-        <div style="font-size:40px;font-weight:bold;margin:20px 0;">
-        00 Hari 00:00:00
-        </div>
-
-        <p>Semoga panjang umur, sehat selalu,<br>
-        dan semua impianmu menjadi kenyataan. ❤️</p>
-
-        <button onclick="playBirthday()">🎵 Putar Musik</button>
-        `;
-
-        fire();
-
-        if(!window.confettiLoop){
-            window.confettiLoop = setInterval(fire,3000);
-        }
-
-        return;
-    }
-
-    const hari = Math.floor(diff/(1000*60*60*24));
-    const jam = Math.floor((diff/(1000*60*60))%24);
-    const menit = Math.floor((diff/(1000*60))%60);
-    const detik = Math.floor((diff/1000)%60);
-
-    content.innerHTML=`
-    <h1>🎁</h1>
-
-    <div style="font-size:40px;font-weight:bold;margin:20px 0;">
-    ${hari} Hari ${String(jam).padStart(2,'0')}:${String(menit).padStart(2,'0')}:${String(detik).padStart(2,'0')}
-    </div>
-
-    <p>Menuju <b>16 Juli</b></p>
-    `;
-}
-
-updateCountdown();
-setInterval(updateCountdown,1000);
+countdown();
+setInterval(countdown,1000);
 
 </script>
 
